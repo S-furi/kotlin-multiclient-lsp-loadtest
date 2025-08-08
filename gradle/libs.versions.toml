@@ -1,0 +1,5 @@
+[versions]
+lsp4j = "0.24.0"
+
+[libraries]
+org-eclipse-lsp4j = { module = "org.eclipse.lsp4j:org.eclipse.lsp4j", version.ref = "lsp4j" }

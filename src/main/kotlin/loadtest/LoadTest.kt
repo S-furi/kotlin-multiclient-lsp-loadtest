@@ -1,6 +1,13 @@
 package loadtest
 
-import lsp.client.KotlinLSPClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import lsp.RandomOpLSPClient
+import lsp.kotlin.KotlinLSPClient
 import java.io.File
 import java.net.URI
 import kotlin.io.path.createTempDirectory
@@ -14,13 +21,34 @@ import kotlin.io.path.createTempDirectory
  * - create a metrics class in order to asses performance and server stress under load
  */
 object LoadTest {
-    private val clients = mutableListOf<KotlinLSPClient>()
+    private val clients = mutableListOf<RandomOpLSPClient>()
     private val projects = mutableListOf<URI>()
+    private val jobs = mutableListOf<Job>()
 
+    fun spawnClient(project: URI, name: String): RandomOpLSPClient {
+        val ktClient = KotlinLSPClient()
+        val rndClient = RandomOpLSPClient.buildClientWithSupportedOperations(ktClient, project, name)
+        clients.add(rndClient)
+        projects.add(project)
+        return rndClient
+    }
 
-    fun spawnNClients(n: Int) = repeat(n) { clients.add(KotlinLSPClient()) }
+    suspend fun runClients(scope: CoroutineScope) {
+        clients.forEach {
+            jobs += scope.launch(Dispatchers.IO) {
+                it.execute()
+                println("Client ${it.name} started")
+            }
+        }
+    }
 
-    fun killAllClients() = clients.forEach { it.exit() }
+    suspend fun initClients(scope: CoroutineScope) {
+        clients.forEach { scope.launch { it.initialize() }.join() }
+    }
+
+    suspend fun killAllClients() = coroutineScope {
+        jobs.forEach { it.cancelAndJoin() }
+    }
 
     fun cleanupProjects() = projects.forEach { File(it).deleteRecursively() }
 
@@ -45,10 +73,4 @@ object LoadTest {
         }
         return projectRoot.toURI()
     }
-}
-
-fun main() {
-    LoadTest.spawnRandomWorkspace("culo")
-//    Thread.sleep(10000)
-//    LoadTest.cleanupProjects()
 }

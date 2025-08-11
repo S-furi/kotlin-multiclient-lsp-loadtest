@@ -1,4 +1,4 @@
-package lsp.client
+package lsp.kotlin
 
 import org.eclipse.lsp4j.MessageActionItem
 import org.eclipse.lsp4j.MessageParams
@@ -13,22 +13,21 @@ class KotlinLanguageClient : LanguageClient {
     }
 
     override fun publishDiagnostics(diagnostics: PublishDiagnosticsParams) {
-        diagnostics.diagnostics.forEach { d -> println("Diagnostic: ${d.message} at ${d.range}") }
+//        diagnostics.diagnostics.forEach { d -> println("Diagnostic: ${d.message} at ${d.range}") }
     }
 
     override fun showMessage(messageParams: MessageParams) {
-        println("[${messageParams.type}]: ${messageParams.message}")
+//        println("[${messageParams.type}]: ${messageParams.message}")
     }
 
     override fun showMessageRequest(params: ShowMessageRequestParams): CompletableFuture<MessageActionItem?>? {
-        println("Message request: ${params.message}")
+//        println("Message request: ${params.message}")
         params.actions?.forEach { action ->
-            println("Action: ${action.title}")
+//            println("Action: ${action.title}")
         }
         return CompletableFuture.completedFuture(params.actions?.firstOrNull())
     }
 
     override fun logMessage(message: MessageParams) {
-        // println("${message.message}")
     }
 }

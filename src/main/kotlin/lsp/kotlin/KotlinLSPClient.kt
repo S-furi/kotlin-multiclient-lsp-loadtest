@@ -1,4 +1,4 @@
-package lsp.client
+package lsp.kotlin
 
 import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.messages.Either
@@ -11,10 +11,10 @@ import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 
-class KotlinLSPClient {
-    private val socket = Socket("127.0.0.1", 9999)
+class KotlinLSPClient(host: String = "127.0.0.1", port: Int = 9999) {
+    private val socket by lazy { Socket(host, port) }
     private val languageClient = KotlinLanguageClient()
-    private val languageServer: LanguageServer = getRemoteLanguageServer()
+    private val languageServer: LanguageServer by lazy { getRemoteLanguageServer() }
     private lateinit var stopFuture: Future<Void>
 
     typealias Completions = Either<List<CompletionItem>, CompletionList>
@@ -30,7 +30,7 @@ class KotlinLSPClient {
 
         return languageServer.initialize(params)
             .thenCompose { res ->
-                println(">>> Initialization response from server:\n$res")
+//                println(">>> Initialization response from server:\n$res")
                 languageServer.initialized(InitializedParams())
                 CompletableFuture.completedFuture(null)
             }

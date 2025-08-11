@@ -20,7 +20,6 @@ dependencies {
     testImplementation(kotlin("test"))
     implementation(libs.org.eclipse.lsp4j)
     implementation(libs.kotlinx.coroutines)
-    implementation(libs.ktor.network)
 }
 
 tasks.test {

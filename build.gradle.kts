@@ -2,6 +2,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "2.2.0"
+    application
+}
+
+application {
+    mainClass.set("loadtest.LauncherKt")
 }
 
 group = "io.github.S-furi"
@@ -14,6 +19,7 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
     implementation(libs.org.eclipse.lsp4j)
+    implementation(libs.kotlinx.coroutines)
 }
 
 tasks.test {

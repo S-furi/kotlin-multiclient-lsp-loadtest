@@ -1,0 +1,6 @@
+object Completion {
+    // caret for autocompletion 2, 49
+    fun List<String>.uppercaseAll() = map { it.up }
+
+    private fun log(s: String) = println("[Completion] - $s")
+}

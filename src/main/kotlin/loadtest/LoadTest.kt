@@ -12,14 +12,6 @@ import java.io.File
 import java.net.URI
 import kotlin.io.path.createTempDirectory
 
-/**
- * TODO:
- * - create random files in workspaces
- * - create an LSPClient that accepts a list of operations (while true, listOfOp.foreach(execute))
- *   - actions could be defined as (LspClient) -> Unit, just ignore the result
- * - create logic in order to draw operations to assign for each client
- * - create a metrics class in order to asses performance and server stress under load
- */
 object LoadTest {
     private val clients = mutableListOf<RandomOpLSPClient>()
     private val projects = mutableListOf<URI>()
@@ -33,7 +25,7 @@ object LoadTest {
         return rndClient
     }
 
-    suspend fun runClients(scope: CoroutineScope) {
+    fun runClients(scope: CoroutineScope) {
         clients.forEach {
             jobs += scope.launch(Dispatchers.IO) {
                 it.execute()

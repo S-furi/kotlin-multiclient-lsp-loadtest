@@ -17,9 +17,8 @@ object Launcher {
 //            }
 //        }
 
-//        val workspace = LoadTest.spawnRandomWorkspace("client-all-test")
+        val workspace = LoadTest.spawnRandomWorkspace("client-all-test")
 //        val workspace = LoadTest.createBareGradleProject("client-all-test")
-        val workspace = Path.of("/tmp/jpstest").toUri()
 
         repeat(nClients) {
             LoadTest.spawnClient(workspace, "client-$it")

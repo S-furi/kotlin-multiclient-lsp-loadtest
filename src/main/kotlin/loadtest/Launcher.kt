@@ -4,16 +4,27 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import utils.LSPServer
 import kotlin.system.exitProcess
+import java.nio.file.Path
+import java.net.URI
 
 object Launcher {
     fun launchTest(nClients: Int) = runBlocking {
 
+//        repeat(nClients) {
+//            LoadTest.spawnRandomWorkspace("client-$it").also { project ->
+//                LoadTest.spawnClient(project, "client-$it")
+//                println("Created client $it for $project")
+//            }
+//        }
+
+//        val workspace = LoadTest.spawnRandomWorkspace("client-all-test")
+//        val workspace = LoadTest.createBareGradleProject("client-all-test")
+        val workspace = Path.of("/tmp/jpstest").toUri()
+
         repeat(nClients) {
-            LoadTest.spawnRandomWorkspace("client-$it").also { project ->
-                LoadTest.spawnClient(project, "client-$it")
-                println("Created client $it for $project")
-            }
+            LoadTest.spawnClient(workspace, "client-$it")
         }
+
 
         try {
             LoadTest.initClients(this)

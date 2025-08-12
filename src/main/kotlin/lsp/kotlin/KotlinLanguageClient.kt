@@ -1,5 +1,6 @@
 package lsp.kotlin
 
+import org.eclipse.lsp4j.LogTraceParams
 import org.eclipse.lsp4j.MessageActionItem
 import org.eclipse.lsp4j.MessageParams
 import org.eclipse.lsp4j.PublishDiagnosticsParams
@@ -29,5 +30,10 @@ class KotlinLanguageClient : LanguageClient {
     }
 
     override fun logMessage(message: MessageParams) {
+//        println("[${message.type}]: ${message.message}")
+    }
+
+    override fun logTrace(params: LogTraceParams?) {
+//        println("Log trace: ${params?.message}")
     }
 }

@@ -10,7 +10,12 @@ import lsp.RandomOpLSPClient
 import lsp.kotlin.KotlinLSPClient
 import java.io.File
 import java.net.URI
+import java.nio.file.attribute.FileAttribute
+import kotlin.io.path.Path
+import kotlin.io.path.createFile
 import kotlin.io.path.createTempDirectory
+import kotlin.system.measureTimeMillis
+import kotlin.time.measureTime
 
 object LoadTest {
     private val clients = mutableListOf<RandomOpLSPClient>()
@@ -35,7 +40,11 @@ object LoadTest {
     }
 
     suspend fun initClients(scope: CoroutineScope) {
-        clients.forEach { scope.launch { it.initialize() }.join() }
+        clients.forEach { client ->
+            scope.launchTimed("initialization") {
+                client.initialize()
+            }.let { client.log("Elapsed time: $it ms") }
+        }
     }
 
     suspend fun killAllClients() = coroutineScope {
@@ -65,4 +74,19 @@ object LoadTest {
         }
         return projectRoot.toURI()
     }
+
+    fun createBareGradleProject(projectName: String): URI {
+        val projectRoot = createTempDirectory(projectName).toFile()
+
+        LoadTest::class.java.getResource("/gradle_templates/Completion.kt.template")?.file?.let { template ->
+            File(template).copyTo(projectRoot.resolve("Completion.kt"))
+            projectRoot.resolve("build.gradle.kts").createNewFile()
+        }
+        return projectRoot.toURI()
+    }
+
+    private suspend fun CoroutineScope.launchTimed(name: String, block: suspend CoroutineScope.() -> Unit): Long =
+        measureTimeMillis {
+            launch { block() }.join()
+        }
 }

@@ -35,7 +35,7 @@ class RandomOpLSPClient(
         }
     }
 
-    private fun log(msg: String) = println("[$name] - $msg")
+    fun log(msg: String) = println("[$name] - $msg")
 
     companion object {
         /**
@@ -54,14 +54,20 @@ class RandomOpLSPClient(
             val hover = {
                 val position = Position(1, 7) // println
                 ktClient.openDocument(mainRes)
-                ktClient.hover(mainRes, position).get()
+                val res = ktClient.hover(mainRes, position).get()
+                require(res?.contents?.toString()?.isNotEmpty() ?: false) {
+                    "Hover result is empty!, got \n$res"
+                }
                 ktClient.closeDocument(mainRes)
             }
 
             val completion = {
                 val position = Position(2, 49)
                 ktClient.openDocument(completionRes)
-                ktClient.getCompletion(completionRes, position)
+                val res = ktClient.getCompletion(completionRes, position).get()
+                require(res?.left?.isNotEmpty() ?: res?.right?.items?.isNotEmpty() ?: false) {
+                    "Completion result is empty!, got\n$res"
+                }
             }
 
             val references = {

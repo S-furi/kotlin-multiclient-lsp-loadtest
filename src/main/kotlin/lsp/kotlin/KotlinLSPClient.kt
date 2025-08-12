@@ -21,7 +21,7 @@ class KotlinLSPClient(host: String = "127.0.0.1", port: Int = 9999) {
 
     fun init(kotlinProjectRoot: String, projectName: String = "None"): Future<Void> {
         val capabilities = getCompletionCapabilities()
-        val workspaceFolders = listOf(WorkspaceFolder("file://$kotlinProjectRoot", projectName))
+        val workspaceFolders = null // listOf(WorkspaceFolder("file://$kotlinProjectRoot", projectName))
 
         val params = InitializeParams().apply {
             this.capabilities = capabilities
@@ -29,8 +29,7 @@ class KotlinLSPClient(host: String = "127.0.0.1", port: Int = 9999) {
         }
 
         return languageServer.initialize(params)
-            .thenCompose { res ->
-//                println(">>> Initialization response from server:\n$res")
+            .thenCompose { _ ->
                 languageServer.initialized(InitializedParams())
                 CompletableFuture.completedFuture(null)
             }
